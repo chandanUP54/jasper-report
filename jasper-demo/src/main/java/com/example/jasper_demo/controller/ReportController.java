@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.*;
 import com.example.jasper_demo.dto.ReportFilterDTO;
 import com.example.jasper_demo.services.ReportService;
 
+//in this dynamic report we dont need to create jrxml seperate we create it by java => DynamicReportGenerator
+
 @RestController
 @RequestMapping("/api/report")
 public class ReportController {

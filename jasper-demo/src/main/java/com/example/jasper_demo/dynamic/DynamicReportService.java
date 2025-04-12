@@ -8,7 +8,7 @@ import java.sql.ResultSet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.example.jasper_demo.db.UserDB;
+import com.example.jasper_demo.db.DatabaseConnect;
 
 import net.sf.jasperreports.engine.JRResultSetDataSource;
 import net.sf.jasperreports.engine.JasperCompileManager;
@@ -18,36 +18,41 @@ import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.design.JasperDesign;
 
+
+
 @Service
 public class DynamicReportService {
+	
+	@Autowired
+	private DatabaseConnect dbconnect;
 
-	public void generateReport(String sqlQuery, String outputPath) throws Exception {
-		// Database connection
-		Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/testdb", "root", "admin");
+	public  byte[] generateReport(String sqlQuery) throws Exception {
 
-		try {
-			// Create JasperDesign
-			JasperDesign jasperDesign = DynamicReportGenerator.createDynamicReportDesign(sqlQuery, conn);
+        Connection conn = dbconnect.getConnection();
 
-			// Compile the report
-			JasperReport jasperReport = JasperCompileManager.compileReport(jasperDesign);
+        try {
+            // Create JasperDesign
+            JasperDesign jasperDesign = DynamicReportGenerator.createDynamicReportDesign(sqlQuery, conn);
 
-			// Execute the query
-			PreparedStatement stmt = conn.prepareStatement(sqlQuery);
-			ResultSet rs = stmt.executeQuery();
+            // Compile the report
+            JasperReport jasperReport = JasperCompileManager.compileReport(jasperDesign);
 
-			// Fill the report
-			JRResultSetDataSource dataSource = new JRResultSetDataSource(rs);
-			JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, null, dataSource);
+            // Execute the query
+            PreparedStatement stmt = conn.prepareStatement(sqlQuery);
+            ResultSet rs = stmt.executeQuery();
 
-			// Export to PDF (or other formats)
-			JasperExportManager.exportReportToPdfFile(jasperPrint, outputPath);
+            // Fill the report
+            JRResultSetDataSource dataSource = new JRResultSetDataSource(rs);
+            JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, null, dataSource);
 
-		} finally {
-			if (conn != null) {
-				conn.close();
-			}
-		}
-	}
+            // Export to PDF as byte array
+            return JasperExportManager.exportReportToPdf(jasperPrint);
+
+        } finally {
+            if (conn != null) {
+                conn.close();
+            }
+        }
+    }
 
 }

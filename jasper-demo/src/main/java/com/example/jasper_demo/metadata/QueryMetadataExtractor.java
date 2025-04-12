@@ -8,6 +8,7 @@ import java.sql.ResultSetMetaData;
 public class QueryMetadataExtractor {
     public static ResultSetMetaData getQueryMetadata(String sqlQuery, Connection conn) throws Exception {
         PreparedStatement stmt = conn.prepareStatement(sqlQuery);
+        System.out.println("metadata: "+stmt.executeQuery().getMetaData());
         return stmt.executeQuery().getMetaData();
     }
 }

@@ -6,8 +6,10 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
-public class UserDB {
+@Component
+public class DatabaseConnect {
 
 	@Value("${spring.datasource.url}")
 	private String URL;
